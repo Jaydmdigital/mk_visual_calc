@@ -5,7 +5,7 @@ cos60 = 0.5;
 explode = 0.0;   // set > 0.0 to push the parts apart
 frame_motor_h = 40;
  
-frame_extrusion_l = 270; //length of extrusions for horizontals, need cut length
+frame_extrusion_l = 240; //length of extrusions for horizontals, need cut length
 frame_extrusion_h = 600; //length of extrusions for towers, need cut length
 frame_extrusion_w = 15;
 frame_r = ((frame_extrusion_l/2) + 11)/sin60;
@@ -15,14 +15,14 @@ frame_depth = 15/2;
 frame_top = frame_extrusion_h - 30 + explode;
 
 //rail_depth= 13;//17.55 - 7.5;   // for mgn12 rails
-rail_depth= 17.55 - 7.5;   // 17.55 from the tower_slides.scad file
+//rail_depth= 17.55 - 7.5;   // 17.55 from the tower_slides.scad file
 //rail_depth = 25; // the further the carriage is from the slider, the shoert the diagonal rod and we regain max z
-truck_depth=0;
+//truck_depth=0;
 
 rail_length = 400;
-//rail_r_offset = frame_depth + explode;
-//rail_depth = 8 + explode; // mgn12C rail is 8mm high
-//truck_depth = 5 + explode; // mgn12C rail is 8mm high
+rail_r_offset = frame_depth + explode;
+rail_depth = 8 + explode; // mgn12C rail is 8mm high
+truck_depth = 5 + explode; // mgn12C rail is 8mm high
 rail_z_offset = 98; // distance from top of motor fram to bottom of rail
 
 endstop_h = 15;
@@ -35,9 +35,9 @@ carriage_z = 140;
 
 // diagonal rods
 effector_offset = 20; // horizontal distance from center to pivot from effector.scad
-delta_min_angle = 27; // the minimul angle of the diagonal rod as full extension while still being ont he print surface  
+delta_min_angle = 28; // the minimul angle of the diagonal rod as full extension while still being ont he print surface  
 DELTA_SMOOTH_ROD_OFFSET = ((frame_extrusion_l + 11)/2)/sin60;
-DELTA_RADIUS = DELTA_SMOOTH_ROD_OFFSET-effector_offset-(rail_depth + carriage_depth/2)	;
+DELTA_RADIUS = DELTA_SMOOTH_ROD_OFFSET-effector_offset-(rail_depth +truck_depth + carriage_depth/2)	;
 DELTA_DIAGONAL_ROD =((DELTA_RADIUS*2)-effector_offset)/cos(delta_min_angle); // rember we need to subtract the effect offset so we account for keeping the hotend tip on the edge of the build surface
 rod_r = 6/2; // 6mm carbon fiber rods?
 delta_rod_angle = acos(DELTA_RADIUS/DELTA_DIAGONAL_ROD); // angle of delta diagonal rod when homed
@@ -121,10 +121,21 @@ rotate([0,0,120])translate([-frame_extrusion_l/2,-frame_offset,frame_extrusion_w
 rotate([0,0,-120])translate([-frame_extrusion_l/2,-frame_offset,frame_extrusion_w/2 + frame_top]) rotate([0,90,0])color(t_slot_color)extrusion_15(frame_extrusion_l); //X-Z
 
 
-//slides
+/*//slides
 translate([-(sin60*(frame_size)),-(cos60*(frame_size)),calc_carriage_z])rotate([0,0,-60])color(frame_color)import("tower_slides.stl");
 translate([(sin60*(frame_size)),-(cos60*(frame_size)),calc_carriage_z])rotate([0,0,60])color(frame_color)import("tower_slides.stl");
-translate([0,frame_size,calc_carriage_z])rotate([0,0,180])color(frame_color)import("tower_slides.stl");
+translate([0,frame_size,calc_carriage_z])rotate([0,0,180])color(frame_color)import("tower_slides.stl");*/
+
+//rails
+translate([-(sin60*(frame_size-rail_r_offset)),-(cos60*(frame_size-rail_r_offset)),frame_motor_h+rail_z_offset])
+ rotate([0,0,-60])color(rail_color)import("rail_400mm.stl"); //x-tower rail
+translate([(sin60*(frame_size-rail_r_offset)),-(cos60*(frame_size-rail_r_offset)),frame_motor_h+rail_z_offset]) rotate([0,0,60])color(rail_color)import("rail_400mm.stl"); //y-tower rail
+translate([0,frame_size-rail_r_offset,frame_motor_h+rail_z_offset])
+ rotate([0,0,180])color(rail_color)import("rail_400mm.stl"); //z-tower rail
+//trucks mgn12H
+translate([-(sin60*(frame_size-rail_r_offset)),-(cos60*(frame_size-rail_r_offset)),calc_carriage_z-3.35]) rotate([0,0,-60])color("green")import("mgn12c.stl"); //z-tower truck
+translate([(sin60*(frame_size-rail_r_offset)),-(cos60*(frame_size-rail_r_offset)),calc_carriage_z-3.35]) rotate([0,0,60])color("green")import("mgn12c.stl"); //z-tower truck
+translate([0,frame_size-rail_r_offset,calc_carriage_z-3.35]) rotate([0,0,180])color("green")import("mgn12c.stl"); //z-tower truck
 
 
 //Carriages
@@ -134,13 +145,13 @@ translate([0,frame_size-carriage_r_offset,calc_carriage_z]) rotate([90,0,0])tran
 
 //endstops
 //X tower
-//translate([-(sin60*(frame_size-endstop_depth)),-(cos60*(frame_size-endstop_depth)),frame_motor_h+rail_z_offset-endstop_h]) rotate([0,0,-60+180])color(frame_color)import("endstop.stl"); //x-tower lower endstop
+translate([-(sin60*(frame_size-endstop_depth)),-(cos60*(frame_size-endstop_depth)),frame_motor_h+rail_z_offset-endstop_h]) rotate([0,0,-60+180])color(frame_color)import("endstop.stl"); //x-tower lower endstop
 translate([-(sin60*(frame_size-endstop_depth)),-(cos60*(frame_size-endstop_depth)),frame_motor_h+rail_z_offset+rail_length]) rotate([0,0,-60+180])color(frame_color)import("endstop.stl"); //x-tower upper endstop
 //Y tower
-//translate([(sin60*(frame_size-endstop_depth)),-(cos60*(frame_size-endstop_depth)),frame_motor_h+rail_z_offset-endstop_h]) rotate([0,0,60+180])color(frame_color)import("endstop.stl"); //x-tower lower endstop
+translate([(sin60*(frame_size-endstop_depth)),-(cos60*(frame_size-endstop_depth)),frame_motor_h+rail_z_offset-endstop_h]) rotate([0,0,60+180])color(frame_color)import("endstop.stl"); //x-tower lower endstop
 translate([(sin60*(frame_size-endstop_depth)),-(cos60*(frame_size-endstop_depth)),frame_motor_h+rail_z_offset+rail_length]) rotate([0,0,60+180])color(frame_color)import("endstop.stl"); //x-tower upper endstop
 //z tower
-//translate([0,frame_size-endstop_depth,frame_motor_h+rail_z_offset-endstop_h])rotate([0,0,0])color(frame_color)import("endstop.stl"); //x-tower lower endstop
+translate([0,frame_size-endstop_depth,frame_motor_h+rail_z_offset-endstop_h])rotate([0,0,0])color(frame_color)import("endstop.stl"); //x-tower lower endstop
 translate([0,frame_size-endstop_depth,frame_motor_h+rail_z_offset+rail_length])
  rotate([0,0,0])color(frame_color)import("endstop.stl"); //x-tower upper endstop
 
