@@ -25,7 +25,7 @@ rail_length = 400;
 rail_r_offset = frame_depth + explode;
 rail_depth = 8 + explode; // mgn12C rail is 8mm high
 truck_depth = 5 + explode; // mgn12C rail is 8mm high
-rail_z_offset = 98; // distance from top of motor fram to bottom of rail
+rail_z_offset = 108; // distance from top of motor fram to bottom of rail
 
 endstop_h = 15;  // from endstop.scad
 endstop_depth = 9 + 3.5; // from endstop.scad
