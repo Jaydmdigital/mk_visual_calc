@@ -4,12 +4,12 @@ sin60 = 0.866025;
 cos60 = 0.5;
 explode = 0.0;   // set > 0.0 to push the parts apar1t
 
-delta_min_angle = 28; // the minimul angle of the diagonal rod as full extension while still being on the print surface  
+delta_min_angle = 21.1; // the minimul angle of the diagonal rod as full extension while still being on the print surface  
 
 frame_motor_h = 45;
 frame_top_h = 15;
  
-frame_extrusion_l = 240; //length of extrusions for horizontals, need cut length
+frame_extrusion_l = 254; //length of extrusions for horizontals, need cut length
 frame_extrusion_h = 600; //length of extrusions for towers, need cut length
 frame_extrusion_w = 15;
 frame_edge_offset = 22.5/2; // the distance from the center of the extrustion to the butt edge of the vertex. Comes from the vertex.scad file
@@ -19,7 +19,7 @@ frame_size = frame_r + explode;//151.5 + explode;
 frame_offset = frame_r * cos60 + frame_extrusion_w + explode;//92 + explode;    
 // distance to move a centered extrusion from center of build arae to where it needs to be in relation to verticies
 frame_depth = frame_extrusion_w/2; // used when calculating offsets
-frame_top = frame_extrusion_h - 25 + explode; 
+frame_top = frame_extrusion_h - 15 + explode; 
 // I use 30mm based on my own printer. This could vary on how you set up your tensioning/belt length and may allow you to regain soem lost Z if you need it.
 
 effector_h = 8; //height of effector so we can get it centered. From effector.scad
@@ -162,6 +162,9 @@ translate([0-explode,frame_size-endstop_depth-explode,frame_motor_h+rail_z_offse
 //effector - need to flip it and move it up by 1 height to get it to zero on bottom of effector
 translate([0,0,frame_motor_h + effector_h + effector_z - explode*2]) rotate([0,180,60])color(frame_color)import("effector.stl"); //x-tower upper endstop
 
+//hotend
+translate([0,0,frame_motor_h + effector_h + effector_z -hotend_l/2 - explode*2]) color(t_slot_color) cylinder(h=hotend_l,r=10,center=true);
+
 // Build plate
 translate([0,0,plate_z+explode])color(plate_color)cylinder(h=plate_thickness,r=plate_d/2,center=true,$fn=120);
 // Glass tabs
@@ -179,6 +182,9 @@ for(i=[0:2]) {
    translate([-20,20,frame_motor_h + effector_h/2 + effector_z - explode]) rotate([-(90-delta_rod_angle),0,0]) color(rod_color) cylinder(h=DELTA_DIAGONAL_ROD, r=rod_r);
   }
 }
+
+//Ramps mount
+//translate([-80,145,40])rotate([0,0,-120]) color(frame_color)import("mega2560_kutu_Kulak.stl");
 
 
 // This module is used to create a dynamic length extrusion from a 1000mm extrusion STL file
